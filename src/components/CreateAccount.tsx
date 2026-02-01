@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { supabase } from '../utils/supabase/client';
+import { projectId, publicAnonKey } from '../utils/supabase/info';
 
 interface Props {
   role: 'patient' | 'doctor';
@@ -38,35 +39,51 @@ export function CreateAccount(props: Props) {
     setError('');
 
     try {
-      // Sign up with Supabase
-      const response = await supabase.auth.signUp({
-        email: email,
-        password: password,
-        options: {
-          data: {
+      // Create user via server endpoint to bypass email confirmation
+      const response = await fetch(
+        `https://${projectId}.supabase.co/functions/v1/make-server-1eba7937/signup`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${publicAnonKey}`,
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password,
             name: name,
             role: props.role,
-          },
-        },
-      }).catch(function(err) {
-        console.error('Supabase signUp error:', err);
-        throw err;
-      });
+          }),
+        }
+      );
 
-      const { data, error: signUpError } = response;
+      const result = await response.json();
 
-      if (signUpError) {
-        setError(signUpError.message);
+      if (!response.ok || result.error) {
+        setError(result.error || 'Failed to create account');
         setLoading(false);
         return;
       }
 
-      if (data.user) {
+      // Now sign in the user
+      const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+        email: email,
+        password: password,
+      });
+
+      if (signInError) {
+        console.error('Supabase signIn error after signup:', signInError);
+        setError(signInError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (signInData.user) {
         props.onComplete({
           name: name,
           email: email,
           role: props.role,
-          userId: data.user.id,
+          userId: signInData.user.id,
         });
       }
     } catch (err) {
@@ -81,19 +98,15 @@ export function CreateAccount(props: Props) {
     setError('');
 
     try {
-      const response = await supabase.auth.signInWithOAuth({
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin,
         },
-      }).catch(function(err) {
-        console.error('Supabase Google OAuth error:', err);
-        throw err;
       });
 
-      const { error: signInError } = response;
-
       if (signInError) {
+        console.error('Supabase Google OAuth error:', signInError);
         setError(signInError.message);
         setLoading(false);
       }
@@ -109,19 +122,15 @@ export function CreateAccount(props: Props) {
     setError('');
 
     try {
-      const response = await supabase.auth.signInWithOAuth({
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
           redirectTo: window.location.origin,
         },
-      }).catch(function(err) {
-        console.error('Supabase Apple OAuth error:', err);
-        throw err;
       });
 
-      const { error: signInError } = response;
-
       if (signInError) {
+        console.error('Supabase Apple OAuth error:', signInError);
         setError(signInError.message);
         setLoading(false);
       }

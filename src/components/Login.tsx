@@ -19,17 +19,13 @@ export function Login(props: Props) {
     setError('');
 
     try {
-      const response = await supabase.auth.signInWithPassword({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email: email,
         password: password,
-      }).catch(function(err) {
-        console.error('Supabase signInWithPassword error:', err);
-        throw err;
       });
 
-      const { data, error: signInError } = response;
-
       if (signInError) {
+        console.error('Supabase signInWithPassword error:', signInError);
         setError(signInError.message);
         setLoading(false);
         return;
@@ -56,19 +52,15 @@ export function Login(props: Props) {
     setError('');
 
     try {
-      const response = await supabase.auth.signInWithOAuth({
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: window.location.origin,
         },
-      }).catch(function(err) {
-        console.error('Supabase Google OAuth error:', err);
-        throw err;
       });
 
-      const { error: signInError } = response;
-
       if (signInError) {
+        console.error('Supabase Google OAuth error:', signInError);
         setError(signInError.message);
         setLoading(false);
       }
@@ -84,19 +76,15 @@ export function Login(props: Props) {
     setError('');
 
     try {
-      const response = await supabase.auth.signInWithOAuth({
+      const { error: signInError } = await supabase.auth.signInWithOAuth({
         provider: 'apple',
         options: {
           redirectTo: window.location.origin,
         },
-      }).catch(function(err) {
-        console.error('Supabase Apple OAuth error:', err);
-        throw err;
       });
 
-      const { error: signInError } = response;
-
       if (signInError) {
+        console.error('Supabase Apple OAuth error:', signInError);
         setError(signInError.message);
         setLoading(false);
       }

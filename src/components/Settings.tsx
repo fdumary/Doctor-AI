@@ -38,12 +38,8 @@ export function Settings(props: Props) {
 
   const loadUserData = async function() {
     try {
-      const response = await supabase.auth.getUser().catch(function(err) {
-        console.error('Supabase getUser error:', err);
-        throw err;
-      });
+      const { data } = await supabase.auth.getUser();
       
-      const { data } = response;
       if (data.user) {
         setEmail(data.user.email || '');
       }
@@ -65,16 +61,12 @@ export function Settings(props: Props) {
     setMessage('');
 
     try {
-      const response = await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         email: newEmail,
-      }).catch(function(err) {
-        console.error('Supabase updateUser (email) error:', err);
-        throw err;
       });
 
-      const { error: updateError } = response;
-
       if (updateError) {
+        console.error('Supabase updateUser (email) error:', updateError);
         setError(updateError.message);
       } else {
         setMessage('Confirmation email sent to your new address. Please check your inbox.');
@@ -104,16 +96,12 @@ export function Settings(props: Props) {
     setMessage('');
 
     try {
-      const response = await supabase.auth.updateUser({
+      const { error: updateError } = await supabase.auth.updateUser({
         password: newPassword,
-      }).catch(function(err) {
-        console.error('Supabase updateUser (password) error:', err);
-        throw err;
       });
 
-      const { error: updateError } = response;
-
       if (updateError) {
+        console.error('Supabase updateUser (password) error:', updateError);
         setError(updateError.message);
       } else {
         setMessage('Password updated successfully');
@@ -135,16 +123,12 @@ export function Settings(props: Props) {
     setMessage('');
 
     try {
-      const response = await supabase.auth.mfa.enroll({
+      const { data, error: mfaError } = await supabase.auth.mfa.enroll({
         factorType: 'totp',
-      }).catch(function(err) {
-        console.error('Supabase MFA enroll error:', err);
-        throw err;
       });
 
-      const { data, error: mfaError } = response;
-
       if (mfaError) {
+        console.error('Supabase MFA enroll error:', mfaError);
         setError(mfaError.message);
       } else if (data) {
         setQrCode(data.totp.qr_code);
