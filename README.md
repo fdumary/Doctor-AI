@@ -6,7 +6,7 @@ FAU CMBB BioTech Hackathon 2026
 
 ## Description
 
-We will be collecting patient data through a questionnaire and make suggestions to patients and doctors on based on their health.
+Doctor AI collects patient data through a questionnaire and provides recommendations to patients and doctors based on their health.
 
 ## Features
 
@@ -17,13 +17,9 @@ We will be collecting patient data through a questionnaire and make suggestions 
 
 ## Technologies
 
-
+Built with TypeScript, CSS, and HTML.
 
 ## Setup 
-
-This is a code bundle for Doctor AI. The original project is available at https://www.figma.com/design/U40jhPjzxaFiuVccl2plRR/Doctor-AI.
-
-### Running the code
 
 Run `npm i` to install the dependencies.
 
