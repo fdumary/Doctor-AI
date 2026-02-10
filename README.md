@@ -4,7 +4,7 @@ FAU CMBB BioTech Hackathon 2026
 
 <img width="333" height="222" alt="medium (2)" src="https://github.com/user-attachments/assets/1a66babc-58ee-4695-9eec-00b5c4430730" />
 
-https://fifty-server-21976838.figma.site
+Site: https://fifty-server-21976838.figma.site
 
 ## Description
 
